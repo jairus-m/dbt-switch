@@ -1,0 +1,20 @@
+[project]
+name = "dbt-switch"
+version = "0.1.21"
+description = "A simple CLI to switch between dbt Cloud projects and hosts."
+readme = "README.md"
+requires-python = ">=3.8"
+dependencies = [
+    "rich",
+]
+
+[project.scripts]
+dbt-switch = "dbt_switch.main:main"
+
+[dependency-groups]
+dev = [
+    "pytest>=8.3.5",
+]
+
+[tool.setuptools]
+package-dir = {"" = "src"}
