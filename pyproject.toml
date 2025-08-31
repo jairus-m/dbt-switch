@@ -13,6 +13,7 @@ dbt-switch = "dbt_switch.main:main"
 
 [dependency-groups]
 dev = [
+    "pre-commit>=3.5.0",
     "pytest>=8.3.5",
 ]
 
