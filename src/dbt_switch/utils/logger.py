@@ -1,3 +1,7 @@
+"""
+Basic logger for CLI STDOUT output.
+"""
+
 import logging.config
 import sys
 

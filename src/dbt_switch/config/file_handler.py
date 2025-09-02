@@ -1,6 +1,11 @@
+"""
+File handler for the dbt_switch.yml file. This includes all operations that
+directlymodify the dbt_switch.yml file.
+"""
+
 from pathlib import Path
 import yaml
-from .logger import logger
+from ..utils.logger import logger
 
 DIRECTORY = Path.home() / ".dbt"
 CONFIG_FILE = DIRECTORY / "dbt_switch.yml"

@@ -1,4 +1,9 @@
-from .config_handler import (
+"""
+Input handler for the dbt_switch.yml file. This includes all operations that
+take input from the user which leads to some action on the dbt_switch.yml file.
+"""
+
+from .file_handler import (
     add_config,
     update_project_host,
     update_project_id,
