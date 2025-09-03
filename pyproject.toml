@@ -5,6 +5,7 @@ description = "A simple CLI to switch between dbt Cloud projects and hosts."
 readme = "README.md"
 requires-python = ">=3.8"
 dependencies = [
+    "pydantic>=2.10.6",
     "rich",
 ]
 
