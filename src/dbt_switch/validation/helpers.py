@@ -76,8 +76,8 @@ def validate_full_config_after_modification(config: DbtSwitchConfig) -> None:
     try:
         # Purely to trigger all validation
         _ = DbtSwitchConfig(**config.model_dump())
-    except ValidationError as e:
-        raise ValidationError(f"Configuration validation failed: {e}")
+    except ValidationError:
+        raise
 
 
 def create_validated_project_config(host: str, project_id: int) -> ProjectConfig:
