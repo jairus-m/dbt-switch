@@ -20,6 +20,8 @@ class ProjectConfig(BaseModel):
         """Validate host format without requiring protocol."""
         if not isinstance(v, str) or not v.strip():
             raise ValueError("Host must be a non-empty string.")
+        if v.isdigit() or ("." in v and v.replace(".", "").isdigit()):
+            raise ValueError("Host must be a non-empty string. Not a number.")
         return v.strip()
 
 
