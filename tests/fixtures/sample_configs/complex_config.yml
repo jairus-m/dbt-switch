@@ -1,0 +1,22 @@
+profiles:
+  prod-api:
+    host: api-prod.company.getdbt.com
+    project_id: 10001
+  prod-web:
+    host: web-prod.company.getdbt.com
+    project_id: 10002
+  dev-api:
+    host: api-dev.company.getdbt.com
+    project_id: 20001
+  dev-web:
+    host: web-dev.company.getdbt.com
+    project_id: 20002
+  staging-api:
+    host: api-staging.company.getdbt.com
+    project_id: 30001
+  staging-web:
+    host: web-staging.company.getdbt.com
+    project_id: 30002
+  test-env:
+    host: test.company.getdbt.com
+    project_id: 40001

@@ -3,8 +3,8 @@ Input handler for the dbt_switch.yml file. This includes all operations that
 take input from the user which leads to some action on the dbt_switch.yml file.
 """
 
-from src.dbt_switch.utils.logger import logger
-from src.dbt_switch.config.file_handler import (
+from dbt_switch.utils.logger import logger
+from dbt_switch.config.file_handler import (
     add_config,
     update_project_host,
     update_project_id,
