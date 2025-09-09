@@ -1,0 +1,13 @@
+profiles:
+  invalid-empty-host:
+    host: ""
+    project_id: 12345
+  invalid-negative-id:
+    host: valid.getdbt.com
+    project_id: -1
+  invalid-zero-id:
+    host: another.getdbt.com
+    project_id: 0
+  invalid-numeric-host:
+    host: "123.456"
+    project_id: 99999

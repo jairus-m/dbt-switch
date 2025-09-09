@@ -1,0 +1,10 @@
+profiles:
+  production:
+    host: prod.company.getdbt.com
+    project_id: 11111
+  development:
+    host: dev.company.getdbt.com
+    project_id: 22222
+  staging:
+    host: staging.company.getdbt.com
+    project_id: 33333
