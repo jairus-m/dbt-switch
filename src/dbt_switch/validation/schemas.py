@@ -1,5 +1,5 @@
-from pydantic import BaseModel, field_validator, model_validator
-from typing import Dict
+from pydantic import BaseModel, Field, field_validator, model_validator, ConfigDict
+from typing import Dict, List
 import re
 
 
@@ -62,3 +62,48 @@ class DbtSwitchConfig(BaseModel):
             raise ValueError("Each project must have a unique name.")
 
         return values
+
+
+class DbtCloudProjectItem(BaseModel):
+    """A project item in the dbt_cloud.yml projects list."""
+
+    project_name: str = Field(alias="project-name")
+    project_id: str = Field(alias="project-id")
+    account_name: str = Field(alias="account-name")
+    account_id: str = Field(alias="account-id")
+    account_host: str = Field(alias="account-host")
+    token_name: str = Field(alias="token-name")
+    token_value: str = Field(alias="token-value")
+
+    model_config = ConfigDict(populate_by_name=True)
+
+
+class DbtCloudContext(BaseModel):
+    """Context section of dbt_cloud.yml."""
+
+    active_host: str = Field(alias="active-host")
+    active_project: str = Field(alias="active-project")
+
+    model_config = ConfigDict(populate_by_name=True)
+
+    @field_validator("active_host", "active_project")
+    def validate_fields(cls, v):
+        """Validate context fields."""
+        if not isinstance(v, str) or not v.strip():
+            raise ValueError("Context fields must be non-empty strings.")
+        return v.strip()
+
+
+class DbtCloudConfig(BaseModel):
+    """Main config file for dbt_cloud.yml."""
+
+    version: str
+    context: DbtCloudContext
+    projects: List[DbtCloudProjectItem] = []
+
+    @field_validator("version")
+    def validate_version(cls, v):
+        """Validate version format."""
+        if not isinstance(v, str) or not v.strip():
+            raise ValueError("Version must be a non-empty string.")
+        return v.strip()
