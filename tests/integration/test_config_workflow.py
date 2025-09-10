@@ -13,6 +13,7 @@ from dbt_switch.config.file_handler import (
 )
 from dbt_switch.config.input_handler import (
     add_user_config_input,
+    switch_user_config_input,
 )
 from dbt_switch.validation.schemas import DbtSwitchConfig, ProjectConfig
 
@@ -85,3 +86,10 @@ class TestConfigWorkflows:
         mock_add_config.assert_called_once_with(
             "test-project", "test.getdbt.com", 12345
         )
+
+    @patch("dbt_switch.config.input_handler.switch_project")
+    def test_switch_workflow(self, mock_switch):
+        """Test switch project workflow."""
+        switch_user_config_input("test-project")
+
+        mock_switch.assert_called_once_with("test-project")

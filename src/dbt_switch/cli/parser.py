@@ -10,11 +10,14 @@ from dbt_switch.config.input_handler import (
     add_user_config_input,
     update_user_config_input,
     delete_user_config_input,
+    switch_user_config_input,
 )
 
 
 def arg_parser():
     parser = argparse.ArgumentParser(description="dbt Cloud project and host switcher.")
+
+    parser.add_argument("-p", "--project", help="Switch to the specified project")
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
     subparsers.add_parser("init", help="Initialize ~/.dbt/dbt_switch.yml")
@@ -32,6 +35,20 @@ def arg_parser():
     )
 
     args = parser.parse_args()
+
+    if args.project:
+        try:
+            switch_user_config_input(args.project)
+        except Exception as e:
+            logger.error(f"Failed to switch to project '{args.project}': {e}")
+            import sys
+
+            sys.exit(1)
+        return
+
+    if not args.command:
+        parser.print_help()
+        return
 
     if args.command == "init":
         init_config()
