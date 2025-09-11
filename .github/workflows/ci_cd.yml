@@ -44,7 +44,7 @@ jobs:
           uvx ruff check .
 
   unit-tests:
-    if: github.event_name == 'pull_request'
+    # if: github.event_name == 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -53,10 +53,8 @@ jobs:
       - name: Pytest
         run: |
           uv venv
+          uv pip install -e .
           uv run pytest
-        env:
-          DBT_CLOUD_API_KEY: ${{ secrets.DBT_CLOUD_API_KEY }}
-          DBT_CLOUD_ACCOUNT_ID: ${{ secrets.DBT_CLOUD_ACCOUNT_ID }}
 
   test-build:
     needs: [lint, unit-tests]
