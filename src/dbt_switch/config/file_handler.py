@@ -214,3 +214,38 @@ def delete_project_config(project: str) -> None:
     except (ValidationError, ValueError) as e:
         logger.error(f"Failed to delete project '{project}': {e}")
         raise
+
+
+def list_all_projects() -> None:
+    """
+    List all projects with their configuration details and mark the active one.
+    Reads from dbt_switch.yml and cross-references with dbt_cloud.yml for active project.
+    """
+    from dbt_switch.config.cloud_handler import read_dbt_cloud_config
+
+    config = get_config()
+    if not config or not config.profiles:
+        logger.info(
+            "No projects configured. Run 'dbt-switch init' and 'dbt-switch add' to get started."
+        )
+        return
+
+    cloud_config = read_dbt_cloud_config()
+    active_project = None
+    if cloud_config:
+        for project_name, project_config in config.profiles.items():
+            if (
+                project_config.host == cloud_config.context.active_host
+                and str(project_config.project_id)
+                == cloud_config.context.active_project
+            ):
+                active_project = project_name
+                break
+
+    print("Available projects:")
+    for project_name, project_config in config.profiles.items():
+        active_marker = " [ACTIVE]" if project_name == active_project else ""
+        prefix = "  * " if project_name == active_project else "    "
+        print(
+            f"{prefix}{project_name:<12} ({project_config.host}, ID: {project_config.project_id}){active_marker}"
+        )

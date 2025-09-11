@@ -17,6 +17,7 @@ class TestCliParser:
         [
             ("init", "dbt_switch.cli.parser.init_config", None),
             ("add", "dbt_switch.cli.parser.add_user_config_input", "add"),
+            ("list", "dbt_switch.cli.parser.list_projects", None),
             ("delete", "dbt_switch.cli.parser.delete_user_config_input", "delete"),
         ],
     )
@@ -56,3 +57,10 @@ class TestCliParser:
             with pytest.raises(SystemExit) as exc_info:
                 arg_parser()
             assert exc_info.value.code != 0
+
+    def test_list_command_execution(self):
+        """Test that list command executes without errors."""
+        with patch("dbt_switch.cli.parser.list_projects") as mock_list_projects:
+            with patch.object(sys, "argv", ["dbt-switch", "list"]):
+                arg_parser()
+                mock_list_projects.assert_called_once()

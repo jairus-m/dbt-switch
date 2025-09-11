@@ -11,6 +11,7 @@ from dbt_switch.config.input_handler import (
     update_user_config_input,
     delete_user_config_input,
     switch_user_config_input,
+    list_projects,
 )
 
 
@@ -22,6 +23,7 @@ def arg_parser():
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
     subparsers.add_parser("init", help="Initialize ~/.dbt/dbt_switch.yml")
     subparsers.add_parser("add", help="Add a new project host and project_id")
+    subparsers.add_parser("list", help="List all available projects")
     subparsers.add_parser("delete", help="Delete a project entry")
 
     update_parser = subparsers.add_parser(
@@ -52,6 +54,10 @@ def arg_parser():
 
     if args.command == "init":
         init_config()
+
+    if args.command == "list":
+        list_projects()
+        return
 
     if args.command == "add":
         add_user_config_input(args.command)
