@@ -135,6 +135,7 @@ version = "0.2.0"
 source = { virtual = "." }
 dependencies = [
     { name = "pydantic" },
+    { name = "pyyaml" },
 ]
 
 [package.dev-dependencies]
@@ -147,7 +148,10 @@ dev = [
 ]
 
 [package.metadata]
-requires-dist = [{ name = "pydantic", specifier = ">=2.10.6" }]
+requires-dist = [
+    { name = "pydantic", specifier = ">=2.10.6" },
+    { name = "pyyaml", specifier = ">=6.0.2" },
+]
 
 [package.metadata.requires-dev]
 dev = [
