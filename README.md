@@ -39,6 +39,9 @@ dbt-switch init
 # Add a new project configuration
 dbt-switch add
 
+# List all configured projects
+dbt-switch list
+
 # Switch to a project
 dbt-switch --project alpha-analytics
 dbt-switch -p beta-corp
@@ -124,6 +127,9 @@ dbt-switch update --project-id
 
 # Delete a project
 dbt-switch delete
+
+# List all projects
+dbt-switch list
 ```
 
 ### Project Switching
@@ -172,6 +178,11 @@ dbt-switch --help
   Successfully switched to project 'beta-corp'
   ✓ Set active host: cloud.getdbt.com
   ✓ Set active project: 67890
+  
+  $ dbt-switch list
+  Available projects:
+    alpha-analytics (cloud.getdbt.com, ID: 12345)
+  * beta-corp      (cloud.getdbt.com, ID: 67890) [ACTIVE]
   ```
 
 ## Commands
@@ -180,6 +191,7 @@ dbt-switch --help
 |---------|-------------|
 | `dbt-switch init` | Initialize the `~/.dbt/dbt_switch.yml` file |
 | `dbt-switch add` | Add a new project configuration |
+| `dbt-switch list` | List all configured projects with their details |
 | `dbt-switch update --host` | Update a project's host |
 | `dbt-switch update --project-id` | Update a project's ID |
 | `dbt-switch delete` | Delete a project configuration |

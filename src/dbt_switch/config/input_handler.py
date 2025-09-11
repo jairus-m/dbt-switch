@@ -9,6 +9,7 @@ from dbt_switch.config.file_handler import (
     update_project_host,
     update_project_id,
     delete_project_config,
+    list_all_projects,
 )
 from dbt_switch.config.cloud_handler import switch_project
 
@@ -111,3 +112,11 @@ def switch_user_config_input(project_name: str):
     except Exception as e:
         logger.error(f"Failed to switch to project '{project_name}': {e}")
         raise
+
+
+def list_projects():
+    """
+    Wrapper function to list all projects. This is done to fit the
+    module architecture and to keep the import in file_handler.py consistent.
+    """
+    list_all_projects()
