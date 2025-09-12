@@ -1,6 +1,6 @@
 [project]
 name = "dbt-switch"
-version = "0.2.1"
+version = "0.2.2"
 description = "A simple CLI to switch between dbt Cloud projects and hosts."
 readme = "README.md"
 requires-python = ">=3.9"

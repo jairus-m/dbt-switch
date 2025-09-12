@@ -2,9 +2,10 @@
 Argument parser.
 """
 
+import sys
 import argparse
 
-from dbt_switch.utils.logger import logger
+from dbt_switch.utils import logger, get_current_version
 from dbt_switch.config.file_handler import init_config
 from dbt_switch.config.input_handler import (
     add_user_config_input,
@@ -14,11 +15,20 @@ from dbt_switch.config.input_handler import (
     list_projects,
 )
 
+__version__ = get_current_version()
+
 
 def arg_parser():
     parser = argparse.ArgumentParser(description="dbt Cloud project and host switcher.")
 
     parser.add_argument("-p", "--project", help="Switch to the specified project")
+
+    parser.add_argument(
+        "--version",
+        action="version",
+        version=f"%(prog)s {__version__}",
+        help="Show the version number",
+    )
 
     subparsers = parser.add_subparsers(dest="command", help="Available commands")
     subparsers.add_parser("init", help="Initialize ~/.dbt/dbt_switch.yml")
@@ -43,8 +53,6 @@ def arg_parser():
             switch_user_config_input(args.project)
         except Exception as e:
             logger.error(f"Failed to switch to project '{args.project}': {e}")
-            import sys
-
             sys.exit(1)
         return
 
