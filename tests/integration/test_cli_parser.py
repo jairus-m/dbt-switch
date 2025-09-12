@@ -64,3 +64,10 @@ class TestCliParser:
             with patch.object(sys, "argv", ["dbt-switch", "list"]):
                 arg_parser()
                 mock_list_projects.assert_called_once()
+
+    def test_version_flag(self):
+        """Test that --version flag works correctly."""
+        with patch.object(sys, "argv", ["dbt-switch", "--version"]):
+            with pytest.raises(SystemExit) as exc_info:
+                arg_parser()
+            assert exc_info.value.code == 0
