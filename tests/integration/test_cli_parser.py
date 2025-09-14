@@ -4,9 +4,9 @@ Integration tests for CLI argument parsing and command routing.
 
 import pytest
 from unittest.mock import patch
-import sys
+from click.testing import CliRunner
 
-from dbt_switch.cli.parser import arg_parser
+from dbt_switch.cli.parser import cli
 
 
 class TestCliParser:
@@ -23,51 +23,68 @@ class TestCliParser:
     )
     def test_parser_commands(self, command, mock_path, expected_call):
         """Test basic command parsing."""
+        runner = CliRunner()
         with patch(mock_path) as mock_func:
-            with patch.object(sys, "argv", ["dbt-switch", command]):
-                arg_parser()
-                if expected_call is None:
-                    mock_func.assert_called_once()
-                else:
-                    mock_func.assert_called_once_with(expected_call)
+            result = runner.invoke(cli, [command])
+            assert result.exit_code == 0
+            if expected_call is None:
+                mock_func.assert_called_once()
+            else:
+                mock_func.assert_called_once_with(expected_call)
 
     @patch("dbt_switch.cli.parser.update_user_config_input")
     def test_parser_update_commands(self, mock_update):
         """Test update command variants."""
-        # Test --host flag
-        with patch.object(sys, "argv", ["dbt-switch", "update", "--host"]):
-            arg_parser()
-            mock_update.assert_called_with("host")
+        runner = CliRunner()
 
-        # Test --project-id flag
-        with patch.object(sys, "argv", ["dbt-switch", "update", "--project-id"]):
-            arg_parser()
-            mock_update.assert_called_with("project_id")
+        # Test update --host option
+        result = runner.invoke(cli, ["update", "--host"])
+        assert result.exit_code == 0
+        mock_update.assert_called_with("host")
+
+        mock_update.reset_mock()
+
+        # Test update --project-id option
+        result = runner.invoke(cli, ["update", "--project-id"])
+        assert result.exit_code == 0
+        mock_update.assert_called_with("project_id")
+
+        mock_update.reset_mock()
+
+        # Test update with no options (should show error)
+        result = runner.invoke(cli, ["update"])
+        assert result.exit_code == 0  # Command succeeds but shows error message
+        mock_update.assert_not_called()
+
+        # Test update with both options (should show error)
+        result = runner.invoke(cli, ["update", "--host", "--project-id"])
+        assert result.exit_code == 0  # Command succeeds but shows error message
+        mock_update.assert_not_called()
 
     def test_parser_edge_cases(self):
         """Test parser edge cases."""
+        runner = CliRunner()
+
         # Test help
-        with patch.object(sys, "argv", ["dbt-switch", "--help"]):
-            with pytest.raises(SystemExit) as exc_info:
-                arg_parser()
-            assert exc_info.value.code == 0
+        result = runner.invoke(cli, ["--help"])
+        assert result.exit_code == 0
+        assert "dbt Cloud project and host switcher" in result.output
 
         # Test invalid command
-        with patch.object(sys, "argv", ["dbt-switch", "invalid"]):
-            with pytest.raises(SystemExit) as exc_info:
-                arg_parser()
-            assert exc_info.value.code != 0
+        result = runner.invoke(cli, ["invalid"])
+        assert result.exit_code != 0
 
     def test_list_command_execution(self):
         """Test that list command executes without errors."""
+        runner = CliRunner()
         with patch("dbt_switch.cli.parser.list_projects") as mock_list_projects:
-            with patch.object(sys, "argv", ["dbt-switch", "list"]):
-                arg_parser()
-                mock_list_projects.assert_called_once()
+            result = runner.invoke(cli, ["list"])
+            assert result.exit_code == 0
+            mock_list_projects.assert_called_once()
 
     def test_version_flag(self):
         """Test that --version flag works correctly."""
-        with patch.object(sys, "argv", ["dbt-switch", "--version"]):
-            with pytest.raises(SystemExit) as exc_info:
-                arg_parser()
-            assert exc_info.value.code == 0
+        runner = CliRunner()
+        result = runner.invoke(cli, ["--version"])
+        assert result.exit_code == 0
+        assert "dbt-switch" in result.output
