@@ -16,7 +16,7 @@ from dbt_switch.validation.schemas import DbtCloudConfig
 DBT_CLOUD_FILE = Path.home() / ".dbt" / "dbt_cloud.yml"
 
 
-def read_dbt_cloud_config() -> Optional[DbtCloudConfig]:
+def read_dbt_cloud_config() -> DbtCloudConfig | None:
     """
     Read and parse the dbt_cloud.yml file.
     Returns:
