@@ -2,11 +2,11 @@
 Main entry point for dbt-switch.
 """
 
-from dbt_switch.cli.parser import arg_parser
+from dbt_switch.cli.parser import cli
 
 
 def main():
-    arg_parser()
+    cli()
 
 
 if __name__ == "__main__":
