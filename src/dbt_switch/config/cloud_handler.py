@@ -5,7 +5,6 @@ modify the dbt_cloud.yml file for switching active host and project.
 
 import yaml
 from pathlib import Path
-from typing import Optional
 from pydantic import ValidationError
 
 from dbt_switch.utils.logger import logger
