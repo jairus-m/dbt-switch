@@ -16,7 +16,6 @@ class TestCliParser:
         "command,mock_path,expected_call",
         [
             ("init", "dbt_switch.cli.parser.init_config", None),
-            ("add", "dbt_switch.cli.parser.add_user_config_input", "add"),
             ("list", "dbt_switch.cli.parser.list_projects", None),
             ("delete", "dbt_switch.cli.parser.delete_user_config_input", "delete"),
         ],
@@ -31,6 +30,46 @@ class TestCliParser:
                 mock_func.assert_called_once()
             else:
                 mock_func.assert_called_once_with(expected_call)
+
+    @patch("dbt_switch.cli.parser.add_user_config_input")
+    def test_add_command_interactive(self, mock_add):
+        """Test add command in interactive mode (no arguments)."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["add"])
+        assert result.exit_code == 0
+        mock_add.assert_called_once_with("add", None, None, None)
+
+    @patch("dbt_switch.cli.parser.add_user_config_input")
+    def test_add_command_non_interactive(self, mock_add):
+        """Test add command in non-interactive mode (all arguments provided)."""
+        runner = CliRunner()
+        result = runner.invoke(cli, ["add", "test-project", "--host", "https://cloud.getdbt.com", "--project-id", "12345"])
+        assert result.exit_code == 0
+        mock_add.assert_called_once_with("add", "test-project", "https://cloud.getdbt.com", 12345)
+
+    @patch("dbt_switch.cli.parser.add_user_config_input")
+    def test_add_command_partial_arguments(self, mock_add):
+        """Test add command with partial arguments (should trigger error handling)."""
+        runner = CliRunner()
+        
+        # Test with only project name
+        result = runner.invoke(cli, ["add", "test-project"])
+        assert result.exit_code == 0
+        mock_add.assert_called_once_with("add", "test-project", None, None)
+        
+        mock_add.reset_mock()
+        
+        # Test with only host
+        result = runner.invoke(cli, ["add", "--host", "https://cloud.getdbt.com"])
+        assert result.exit_code == 0
+        mock_add.assert_called_once_with("add", None, "https://cloud.getdbt.com", None)
+        
+        mock_add.reset_mock()
+        
+        # Test with only project-id
+        result = runner.invoke(cli, ["add", "--project-id", "12345"])
+        assert result.exit_code == 0
+        mock_add.assert_called_once_with("add", None, None, 12345)
 
     @patch("dbt_switch.cli.parser.update_user_config_input")
     def test_parser_update_commands(self, mock_update):

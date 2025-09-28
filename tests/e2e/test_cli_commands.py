@@ -57,6 +57,59 @@ class TestCliCommands:
 
         assert result.returncode in [0, 1]  # May have validation errors
 
+    def test_cli_add_command_non_interactive(self, isolated_filesystem):
+        """Test CLI add command with command-line arguments (non-interactive mode)."""
+        subprocess.run(
+            [sys.executable, "-m", "dbt_switch.main", "init"],
+            env={**os.environ, "HOME": str(isolated_filesystem["home"])},
+            capture_output=True,
+            timeout=10,
+        )
+
+        result = subprocess.run(
+            [
+                sys.executable, "-m", "dbt_switch.main", "add", 
+                "test-project", "--host", "https://test.getdbt.com", "--project-id", "12345"
+            ],
+            env={**os.environ, "HOME": str(isolated_filesystem["home"])},
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+
+        assert result.returncode in [0, 1]  # May have validation errors
+
+    def test_cli_add_command_partial_args_error(self, isolated_filesystem):
+        """Test CLI add command with partial arguments shows error."""
+        subprocess.run(
+            [sys.executable, "-m", "dbt_switch.main", "init"],
+            env={**os.environ, "HOME": str(isolated_filesystem["home"])},
+            capture_output=True,
+            timeout=10,
+        )
+
+        # Test with only project name
+        result = subprocess.run(
+            [sys.executable, "-m", "dbt_switch.main", "add", "test-project"],
+            env={**os.environ, "HOME": str(isolated_filesystem["home"])},
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+
+        assert result.returncode in [0, 1]  # Should handle gracefully
+
+        # Test with only host argument
+        result = subprocess.run(
+            [sys.executable, "-m", "dbt_switch.main", "add", "--host", "https://test.getdbt.com"],
+            env={**os.environ, "HOME": str(isolated_filesystem["home"])},
+            capture_output=True,
+            text=True,
+            timeout=10,
+        )
+
+        assert result.returncode in [0, 1]  # Should handle gracefully
+
     def test_cli_switch_command(self, isolated_filesystem):
         """Test CLI switch command with project name."""
         # Setup config first
