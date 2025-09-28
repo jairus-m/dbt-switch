@@ -36,8 +36,11 @@ uv tool install dbt-switch
 # Initialize the configuration file
 dbt-switch init
 
-# Add a new project configuration
+# Add a new project configuration (interactive)
 dbt-switch add
+
+# Add a new project configuration (non-interactive)
+dbt-switch add my-project --host https://cloud.getdbt.com --project-id 12345
 
 # List all configured projects
 dbt-switch list
@@ -107,17 +110,18 @@ projects:
 
 ### Project Management
 
->Note: These commands are interactive and trigger a bash prompt!
-
 ```bash
 # Initialize configuration file
 dbt-switch init
 
-# Add a new project
+# Add a new project (interactive mode)
 dbt-switch add
 # Enter project name: my-project
 # Enter project host: cloud.getdbt.com
 # Enter project id: 123456
+
+# Add a new project (non-interactive mode - great for automation!)
+dbt-switch add my-project --host cloud.getdbt.com --project-id 123456
 
 # Update project host
 dbt-switch update --host
@@ -159,10 +163,7 @@ dbt-switch --help
   Enter the project id: 12345
   Added project 'alpha-analytics' with host 'cloud.getdbt.com' and project_id 12345
 
-  $ dbt-switch add
-  Enter the project name: beta-corp  
-  Enter the project host: cloud.getdbt.com
-  Enter the project id: 67890
+  $ dbt-switch add beta-corp --host cloud.getdbt.com --project-id 67890
   Added project 'beta-corp' with host 'cloud.getdbt.com' and project_id 67890
   ```
 
@@ -190,7 +191,8 @@ dbt-switch --help
 | Command | Description |
 |---------|-------------|
 | `dbt-switch init` | Initialize the `~/.dbt/dbt_switch.yml` file |
-| `dbt-switch add` | Add a new project configuration |
+| `dbt-switch add` | Add a new project configuration (interactive mode) |
+| `dbt-switch add PROJECT --host HOST --project-id ID` | Add a new project configuration (non-interactive mode) |
 | `dbt-switch list` | List all configured projects with their details |
 | `dbt-switch update --host` | Update a project's host |
 | `dbt-switch update --project-id` | Update a project's ID |

@@ -40,9 +40,12 @@ def init():
 
 
 @cli.command()
-def add():
+@click.argument("project_name", required=False)
+@click.option("--host", help="Project host URL (e.g., https://cloud.getdbt.com)")
+@click.option("--project-id", type=int, help="dbt project ID")
+def add(project_name, host, project_id):
     """Add a new project host and project_id"""
-    add_user_config_input("add")
+    add_user_config_input("add", project_name, host, project_id)
 
 
 @cli.command("list")
