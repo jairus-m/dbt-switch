@@ -121,7 +121,9 @@ def get_project_config(project: str) -> ProjectConfig | None:
     return None
 
 
-def update_project(project: str, host: str | None = None, project_id: int | None = None) -> None:
+def update_project(
+    project: str, host: str | None = None, project_id: int | None = None
+) -> None:
     """
     Update host and/or project_id for a specific project.
     Args:
@@ -144,7 +146,9 @@ def update_project(project: str, host: str | None = None, project_id: int | None
         existing_project = config.profiles[project]
 
         new_host = host if host is not None else existing_project.host
-        new_project_id = project_id if project_id is not None else existing_project.project_id
+        new_project_id = (
+            project_id if project_id is not None else existing_project.project_id
+        )
 
         if project_id is not None:
             validate_unique_project_id(config, project_id, exclude_project=project)

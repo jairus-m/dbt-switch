@@ -43,29 +43,41 @@ class TestCliParser:
     def test_add_command_non_interactive(self, mock_add):
         """Test add command in non-interactive mode (all arguments provided)."""
         runner = CliRunner()
-        result = runner.invoke(cli, ["add", "test-project", "--host", "https://cloud.getdbt.com", "--project-id", "12345"])
+        result = runner.invoke(
+            cli,
+            [
+                "add",
+                "test-project",
+                "--host",
+                "https://cloud.getdbt.com",
+                "--project-id",
+                "12345",
+            ],
+        )
         assert result.exit_code == 0
-        mock_add.assert_called_once_with("add", "test-project", "https://cloud.getdbt.com", 12345)
+        mock_add.assert_called_once_with(
+            "add", "test-project", "https://cloud.getdbt.com", 12345
+        )
 
     @patch("dbt_switch.cli.parser.add_user_config")
     def test_add_command_partial_arguments(self, mock_add):
         """Test add command with partial arguments (should trigger error handling)."""
         runner = CliRunner()
-        
+
         # Test with only project name
         result = runner.invoke(cli, ["add", "test-project"])
         assert result.exit_code == 0
         mock_add.assert_called_once_with("add", "test-project", None, None)
-        
+
         mock_add.reset_mock()
-        
+
         # Test with only host
         result = runner.invoke(cli, ["add", "--host", "https://cloud.getdbt.com"])
         assert result.exit_code == 0
         mock_add.assert_called_once_with("add", None, "https://cloud.getdbt.com", None)
-        
+
         mock_add.reset_mock()
-        
+
         # Test with only project-id
         result = runner.invoke(cli, ["add", "--project-id", "12345"])
         assert result.exit_code == 0
@@ -78,7 +90,9 @@ class TestCliParser:
         runner = CliRunner()
 
         # Test update with project name and host
-        result = runner.invoke(cli, ["update", "test-project", "--host", "new-host.com"])
+        result = runner.invoke(
+            cli, ["update", "test-project", "--host", "new-host.com"]
+        )
         assert result.exit_code == 0
         mock_non_interactive.assert_called_with("test-project", "new-host.com", None)
 

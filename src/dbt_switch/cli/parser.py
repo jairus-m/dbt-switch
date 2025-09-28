@@ -76,8 +76,12 @@ def update(project_name, host, project_id):
             update_user_config_interactive(project_name)
     else:
         if host or project_id:
-            logger.error("You must specify a project name when using --host or --project-id")
-            click.echo("Usage: dbt-switch update PROJECT_NAME [--host HOST] [--project-id ID]")
+            logger.error(
+                "You must specify a project name when using --host or --project-id"
+            )
+            click.echo(
+                "Usage: dbt-switch update PROJECT_NAME [--host HOST] [--project-id ID]"
+            )
         else:
             logger.error("Must specify a project name")
             click.echo("Usage: dbt-switch update PROJECT_NAME [OPTIONS]")

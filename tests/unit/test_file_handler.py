@@ -11,7 +11,6 @@ from dbt_switch.config.file_handler import (
     add_config,
     get_project_config,
     update_project,
-    display_project_config,
     delete_project_config,
 )
 from dbt_switch.validation.schemas import DbtSwitchConfig, ProjectConfig

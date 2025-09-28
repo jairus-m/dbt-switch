@@ -35,7 +35,9 @@ class TestInputHandlers:
 
         update_user_config("host")
 
-        mock_update_host.assert_called_once_with("test-project", host="new-host.getdbt.com")
+        mock_update_host.assert_called_once_with(
+            "test-project", host="new-host.getdbt.com"
+        )
 
     @patch("dbt_switch.config.input_handler.delete_project_config")
     @patch("builtins.input")

@@ -2,7 +2,7 @@
 Comprehensive unit tests for the new interactive update functionality.
 """
 
-from unittest.mock import patch, mock_open, MagicMock
+from unittest.mock import patch, MagicMock
 import pytest
 from dbt_switch.config.input_handler import (
     update_user_config_interactive,
@@ -20,19 +20,25 @@ class TestInteractiveUpdate:
     @patch("dbt_switch.config.input_handler.display_project_config")
     @patch("dbt_switch.config.input_handler.update_project")
     @patch("builtins.input")
-    def test_interactive_update_host_only(self, mock_input, mock_update_host, mock_display):
+    def test_interactive_update_host_only(
+        self, mock_input, mock_update_host, mock_display
+    ):
         """Test interactive update of host only."""
         mock_input.side_effect = ["1", "new-host.getdbt.com"]
 
         update_user_config_interactive("test-project")
 
         mock_display.assert_called_once_with("test-project")
-        mock_update_host.assert_called_once_with("test-project", host="new-host.getdbt.com")
+        mock_update_host.assert_called_once_with(
+            "test-project", host="new-host.getdbt.com"
+        )
 
     @patch("dbt_switch.config.input_handler.display_project_config")
     @patch("dbt_switch.config.input_handler.update_project")
     @patch("builtins.input")
-    def test_interactive_update_project_id_only(self, mock_input, mock_update_id, mock_display):
+    def test_interactive_update_project_id_only(
+        self, mock_input, mock_update_id, mock_display
+    ):
         """Test interactive update of project ID only."""
         mock_input.side_effect = ["2", "67890"]
 
@@ -51,7 +57,9 @@ class TestInteractiveUpdate:
         update_user_config_interactive("test-project")
 
         mock_display.assert_called_once_with("test-project")
-        mock_update_both.assert_called_once_with("test-project", host="new-host.getdbt.com", project_id=67890)
+        mock_update_both.assert_called_once_with(
+            "test-project", host="new-host.getdbt.com", project_id=67890
+        )
 
     @patch("dbt_switch.config.input_handler.display_project_config")
     @patch("builtins.input")
@@ -68,7 +76,9 @@ class TestInteractiveUpdate:
     @patch("dbt_switch.config.input_handler.display_project_config")
     @patch("builtins.input")
     @patch("dbt_switch.utils.logger.logger.error")
-    def test_interactive_update_invalid_choice(self, mock_logger, mock_input, mock_display):
+    def test_interactive_update_invalid_choice(
+        self, mock_logger, mock_input, mock_display
+    ):
         """Test interactive update with invalid choice."""
         mock_input.return_value = "5"
 
@@ -99,14 +109,18 @@ class TestInteractiveUpdate:
     @patch("dbt_switch.config.input_handler.display_project_config")
     @patch("builtins.input")
     @patch("dbt_switch.utils.logger.logger.error")
-    def test_interactive_update_invalid_project_id(self, mock_logger, mock_input, mock_display):
+    def test_interactive_update_invalid_project_id(
+        self, mock_logger, mock_input, mock_display
+    ):
         """Test interactive update with invalid project ID."""
         mock_input.side_effect = ["2", "not-a-number"]
 
         update_user_config_interactive("test-project")
 
         mock_display.assert_called_once_with("test-project")
-        mock_logger.assert_called_with("Invalid project ID 'not-a-number': must be a number")
+        mock_logger.assert_called_with(
+            "Invalid project ID 'not-a-number': must be a number"
+        )
 
 
 class TestNonInteractiveUpdate:
@@ -117,14 +131,18 @@ class TestNonInteractiveUpdate:
         """Test non-interactive update of both host and project ID."""
         update_user_config_non_interactive("test-project", "new-host.getdbt.com", 67890)
 
-        mock_update_both.assert_called_once_with("test-project", host="new-host.getdbt.com", project_id=67890)
+        mock_update_both.assert_called_once_with(
+            "test-project", host="new-host.getdbt.com", project_id=67890
+        )
 
     @patch("dbt_switch.config.input_handler.update_project")
     def test_non_interactive_update_host_only(self, mock_update_host):
         """Test non-interactive update of host only."""
         update_user_config_non_interactive("test-project", "new-host.getdbt.com", None)
 
-        mock_update_host.assert_called_once_with("test-project", host="new-host.getdbt.com")
+        mock_update_host.assert_called_once_with(
+            "test-project", host="new-host.getdbt.com"
+        )
 
     @patch("dbt_switch.config.input_handler.update_project")
     def test_non_interactive_update_project_id_only(self, mock_update_id):
@@ -164,9 +182,15 @@ class TestUpdateProject:
     @patch("dbt_switch.config.file_handler.validate_unique_project_id")
     @patch("dbt_switch.config.file_handler.get_config")
     @patch("dbt_switch.utils.logger.logger.info")
-    def test_update_project_success(self, mock_logger, mock_get_config,
-                                       mock_validate_id, mock_create_project,
-                                       mock_validate_config, mock_save_config):
+    def test_update_project_success(
+        self,
+        mock_logger,
+        mock_get_config,
+        mock_validate_id,
+        mock_create_project,
+        mock_validate_config,
+        mock_save_config,
+    ):
         """Test successful update of both host and project ID."""
         # Mock config
         mock_config = MagicMock()
@@ -181,8 +205,12 @@ class TestUpdateProject:
 
         update_project("test-project", host="new-host.getdbt.com", project_id=67890)
 
-        mock_validate_id.assert_called_once_with(mock_config, 67890, exclude_project="test-project")
-        mock_create_project.assert_called_once_with(host="new-host.getdbt.com", project_id=67890)
+        mock_validate_id.assert_called_once_with(
+            mock_config, 67890, exclude_project="test-project"
+        )
+        mock_create_project.assert_called_once_with(
+            host="new-host.getdbt.com", project_id=67890
+        )
         mock_validate_config.assert_called_once_with(mock_config)
         mock_save_config.assert_called_once_with(mock_config)
         mock_logger.assert_called_with(
@@ -198,7 +226,9 @@ class TestUpdateProject:
         with pytest.raises(ValueError):
             update_project("test-project", host="host", project_id=123)
 
-        mock_logger.assert_called_with("Failed to update project 'test-project': Configuration file not found or invalid.")
+        mock_logger.assert_called_with(
+            "Failed to update project 'test-project': Configuration file not found or invalid."
+        )
 
     @patch("dbt_switch.config.file_handler.get_config")
     @patch("dbt_switch.utils.logger.logger.error")
@@ -211,7 +241,9 @@ class TestUpdateProject:
         with pytest.raises(ValueError):
             update_project("nonexistent-project", host="host", project_id=123)
 
-        mock_logger.assert_called_with("Failed to update project 'nonexistent-project': Project 'nonexistent-project' not found in configuration.")
+        mock_logger.assert_called_with(
+            "Failed to update project 'nonexistent-project': Project 'nonexistent-project' not found in configuration."
+        )
 
 
 class TestDisplayProjectConfig:
@@ -249,7 +281,9 @@ class TestDisplayProjectConfig:
 
     @patch("dbt_switch.config.file_handler.get_config")
     @patch("dbt_switch.utils.logger.logger.error")
-    def test_display_project_config_project_not_found(self, mock_logger, mock_get_config):
+    def test_display_project_config_project_not_found(
+        self, mock_logger, mock_get_config
+    ):
         """Test display with project not found."""
         mock_config = MagicMock()
         mock_config.profiles = {}
@@ -257,4 +291,6 @@ class TestDisplayProjectConfig:
 
         display_project_config("nonexistent-project")
 
-        mock_logger.assert_called_with("Project 'nonexistent-project' not found in configuration.")
+        mock_logger.assert_called_with(
+            "Project 'nonexistent-project' not found in configuration."
+        )
