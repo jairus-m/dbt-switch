@@ -7,13 +7,12 @@ from unittest.mock import patch, MagicMock
 from dbt_switch.config.file_handler import (
     init_config,
     add_config,
-    update_project_host,
-    update_project_id,
+    update_project,
     delete_project_config,
 )
 from dbt_switch.config.input_handler import (
-    add_user_config_input,
-    switch_user_config_input,
+    add_user_config,
+    switch_user_config,
 )
 from dbt_switch.validation.schemas import DbtSwitchConfig, ProjectConfig
 
@@ -51,10 +50,10 @@ class TestConfigWorkflows:
         )
         mock_get.return_value = config
 
-        update_project_host("proj1", "new.getdbt.com")
+        update_project("proj1", host="new.getdbt.com")
         mock_save.assert_called()
 
-        update_project_id("proj1", 99999)
+        update_project("proj1", project_id=99999)
         assert mock_save.call_count == 2
 
     @patch("dbt_switch.config.file_handler.get_config")
@@ -81,7 +80,7 @@ class TestConfigWorkflows:
         """Test input handler workflow."""
         mock_input.side_effect = ["test-project", "test.getdbt.com", "12345"]
 
-        add_user_config_input("add")
+        add_user_config("add")
 
         mock_add_config.assert_called_once_with(
             "test-project", "test.getdbt.com", 12345
@@ -90,6 +89,6 @@ class TestConfigWorkflows:
     @patch("dbt_switch.config.input_handler.switch_project")
     def test_switch_workflow(self, mock_switch):
         """Test switch project workflow."""
-        switch_user_config_input("test-project")
+        switch_user_config("test-project")
 
         mock_switch.assert_called_once_with("test-project")

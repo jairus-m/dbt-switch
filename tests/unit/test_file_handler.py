@@ -10,8 +10,7 @@ from dbt_switch.config.file_handler import (
     get_config,
     add_config,
     get_project_config,
-    update_project_host,
-    update_project_id,
+    update_project,
     delete_project_config,
 )
 from dbt_switch.validation.schemas import DbtSwitchConfig, ProjectConfig
@@ -108,7 +107,7 @@ class TestUpdateProject:
         )
         mock_get.return_value = config
 
-        update_project_host("test-project", "new.getdbt.com")
+        update_project("test-project", host="new.getdbt.com")
 
         mock_save.assert_called_once()
         saved_config = mock_save.call_args[0][0]
@@ -125,7 +124,7 @@ class TestUpdateProject:
         )
         mock_get.return_value = config
 
-        update_project_id("test-project", 99999)
+        update_project("test-project", project_id=99999)
 
         mock_save.assert_called_once()
         saved_config = mock_save.call_args[0][0]
@@ -138,7 +137,7 @@ class TestUpdateProject:
         mock_get.return_value = config
 
         with pytest.raises(ValueError):
-            update_project_host("nonexistent", "new.getdbt.com")
+            update_project("nonexistent", host="new.getdbt.com")
 
     @patch("dbt_switch.config.file_handler.get_config")
     def test_update_project_id_duplicate_fails(self, mock_get):
@@ -152,7 +151,7 @@ class TestUpdateProject:
         mock_get.return_value = config
 
         with pytest.raises(ValueError):
-            update_project_id("proj1", 22222)
+            update_project("proj1", project_id=22222)
 
 
 class TestDeleteProjectConfig:

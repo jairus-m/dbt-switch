@@ -68,8 +68,15 @@ class TestCliCommands:
 
         result = subprocess.run(
             [
-                sys.executable, "-m", "dbt_switch.main", "add", 
-                "test-project", "--host", "https://test.getdbt.com", "--project-id", "12345"
+                sys.executable,
+                "-m",
+                "dbt_switch.main",
+                "add",
+                "test-project",
+                "--host",
+                "https://test.getdbt.com",
+                "--project-id",
+                "12345",
             ],
             env={**os.environ, "HOME": str(isolated_filesystem["home"])},
             capture_output=True,
@@ -101,7 +108,14 @@ class TestCliCommands:
 
         # Test with only host argument
         result = subprocess.run(
-            [sys.executable, "-m", "dbt_switch.main", "add", "--host", "https://test.getdbt.com"],
+            [
+                sys.executable,
+                "-m",
+                "dbt_switch.main",
+                "add",
+                "--host",
+                "https://test.getdbt.com",
+            ],
             env={**os.environ, "HOME": str(isolated_filesystem["home"])},
             capture_output=True,
             text=True,

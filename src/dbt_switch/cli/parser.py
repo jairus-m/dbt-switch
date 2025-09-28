@@ -7,11 +7,12 @@ import click
 from dbt_switch.utils import logger, get_current_version
 from dbt_switch.config.file_handler import init_config
 from dbt_switch.config.input_handler import (
-    add_user_config_input,
-    update_user_config_input,
-    delete_user_config_input,
-    switch_user_config_input,
+    add_user_config,
+    delete_user_config,
+    switch_user_config,
     list_projects,
+    update_user_config_non_interactive,
+    update_user_config_interactive,
 )
 
 
@@ -23,7 +24,7 @@ def cli(ctx, project):
     """dbt Cloud project and host switcher."""
     if project:
         try:
-            switch_user_config_input(project)
+            switch_user_config(project)
         except Exception as e:
             logger.error(f"Failed to switch to project '{project}': {e}")
             ctx.exit(1)
@@ -45,7 +46,7 @@ def init():
 @click.option("--project-id", type=int, help="dbt project ID")
 def add(project_name, host, project_id):
     """Add a new project host and project_id"""
-    add_user_config_input("add", project_name, host, project_id)
+    add_user_config("add", project_name, host, project_id)
 
 
 @cli.command("list")
@@ -57,23 +58,31 @@ def list_projects_cmd():
 @cli.command()
 def delete():
     """Delete a project entry"""
-    delete_user_config_input("delete")
+    delete_user_config("delete")
 
 
 @cli.command()
-@click.option("--host", is_flag=True, help="Update project host")
-@click.option("--project-id", is_flag=True, help="Update project ID")
-def update(host, project_id):
+@click.argument("project_name", required=False)
+@click.option("--host", help="Update project host URL (e.g., https://cloud.getdbt.com)")
+@click.option("--project-id", type=int, help="Update dbt project ID")
+def update(project_name, host, project_id):
     """Update project host or project_id"""
-    if host and project_id:
-        logger.error(
-            "Cannot update both host and project-id at the same time. Choose one."
-        )
-        return
-    elif host:
-        update_user_config_input("host")
-    elif project_id:
-        update_user_config_input("project_id")
+    if project_name:
+        if host or project_id:
+            # Non-interactive mode: update specified parameters
+            update_user_config_non_interactive(project_name, host, project_id)
+        else:
+            # Interactive mode: show menu for updates
+            update_user_config_interactive(project_name)
     else:
-        logger.error("Must specify either --host or --project-id")
-        click.echo("Use 'dbt-switch update --help' for more information.")
+        if host or project_id:
+            logger.error(
+                "You must specify a project name when using --host or --project-id"
+            )
+            click.echo(
+                "Usage: dbt-switch update PROJECT_NAME [--host HOST] [--project-id ID]"
+            )
+        else:
+            logger.error("Must specify a project name")
+            click.echo("Usage: dbt-switch update PROJECT_NAME [OPTIONS]")
+            click.echo("Use 'dbt-switch update --help' for more information.")
