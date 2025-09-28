@@ -17,7 +17,7 @@ class TestCliParser:
         [
             ("init", "dbt_switch.cli.parser.init_config", None),
             ("list", "dbt_switch.cli.parser.list_projects", None),
-            ("delete", "dbt_switch.cli.parser.delete_user_config_input", "delete"),
+            ("delete", "dbt_switch.cli.parser.delete_user_config", "delete"),
         ],
     )
     def test_parser_commands(self, command, mock_path, expected_call):
@@ -31,7 +31,7 @@ class TestCliParser:
             else:
                 mock_func.assert_called_once_with(expected_call)
 
-    @patch("dbt_switch.cli.parser.add_user_config_input")
+    @patch("dbt_switch.cli.parser.add_user_config")
     def test_add_command_interactive(self, mock_add):
         """Test add command in interactive mode (no arguments)."""
         runner = CliRunner()
@@ -39,7 +39,7 @@ class TestCliParser:
         assert result.exit_code == 0
         mock_add.assert_called_once_with("add", None, None, None)
 
-    @patch("dbt_switch.cli.parser.add_user_config_input")
+    @patch("dbt_switch.cli.parser.add_user_config")
     def test_add_command_non_interactive(self, mock_add):
         """Test add command in non-interactive mode (all arguments provided)."""
         runner = CliRunner()
@@ -47,7 +47,7 @@ class TestCliParser:
         assert result.exit_code == 0
         mock_add.assert_called_once_with("add", "test-project", "https://cloud.getdbt.com", 12345)
 
-    @patch("dbt_switch.cli.parser.add_user_config_input")
+    @patch("dbt_switch.cli.parser.add_user_config")
     def test_add_command_partial_arguments(self, mock_add):
         """Test add command with partial arguments (should trigger error handling)."""
         runner = CliRunner()
@@ -71,34 +71,44 @@ class TestCliParser:
         assert result.exit_code == 0
         mock_add.assert_called_once_with("add", None, None, 12345)
 
-    @patch("dbt_switch.cli.parser.update_user_config_input")
-    def test_parser_update_commands(self, mock_update):
+    @patch("dbt_switch.cli.parser.update_user_config_non_interactive")
+    @patch("dbt_switch.cli.parser.update_user_config_interactive")
+    def test_parser_update_commands(self, mock_interactive, mock_non_interactive):
         """Test update command variants."""
         runner = CliRunner()
 
-        # Test update --host option
-        result = runner.invoke(cli, ["update", "--host"])
+        # Test update with project name and host
+        result = runner.invoke(cli, ["update", "test-project", "--host", "new-host.com"])
         assert result.exit_code == 0
-        mock_update.assert_called_with("host")
+        mock_non_interactive.assert_called_with("test-project", "new-host.com", None)
 
-        mock_update.reset_mock()
+        mock_non_interactive.reset_mock()
 
-        # Test update --project-id option
-        result = runner.invoke(cli, ["update", "--project-id"])
+        # Test update with project name and project-id
+        result = runner.invoke(cli, ["update", "test-project", "--project-id", "12345"])
         assert result.exit_code == 0
-        mock_update.assert_called_with("project_id")
+        mock_non_interactive.assert_called_with("test-project", None, 12345)
 
-        mock_update.reset_mock()
+        mock_non_interactive.reset_mock()
 
-        # Test update with no options (should show error)
+        # Test update with project name only (interactive mode)
+        result = runner.invoke(cli, ["update", "test-project"])
+        assert result.exit_code == 0
+        mock_interactive.assert_called_with("test-project")
+
+        mock_interactive.reset_mock()
+
+        # Test update with no project name (should show error)
         result = runner.invoke(cli, ["update"])
         assert result.exit_code == 0  # Command succeeds but shows error message
-        mock_update.assert_not_called()
+        mock_interactive.assert_not_called()
+        mock_non_interactive.assert_not_called()
 
-        # Test update with both options (should show error)
-        result = runner.invoke(cli, ["update", "--host", "--project-id"])
+        # Test update with options but no project name (should show error)
+        result = runner.invoke(cli, ["update", "--host", "host.com"])
         assert result.exit_code == 0  # Command succeeds but shows error message
-        mock_update.assert_not_called()
+        mock_interactive.assert_not_called()
+        mock_non_interactive.assert_not_called()
 
     def test_parser_edge_cases(self):
         """Test parser edge cases."""

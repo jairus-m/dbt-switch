@@ -121,46 +121,18 @@ def get_project_config(project: str) -> ProjectConfig | None:
     return None
 
 
-def update_project_host(project: str, host: str) -> None:
+def update_project(project: str, host: str | None = None, project_id: int | None = None) -> None:
     """
-    Update the host for a specific project.
+    Update host and/or project_id for a specific project.
     Args:
         project: dbt project name that is used to select the host and project_id
-        host: Active host (ex. https://cloud.getdbt.com)
-    """
-    try:
-        config = get_config()
-        if not config:
-            raise ValueError("Configuration file not found or invalid.")
-
-        if project not in config.profiles:
-            raise ValueError(f"Project '{project}' not found in configuration.")
-
-        existing_project = config.profiles[project]
-
-        updated_project = create_validated_project_config(
-            host=host, project_id=existing_project.project_id
-        )
-
-        config.profiles[project] = updated_project
-        validate_full_config_after_modification(config)
-
-        save_config(config)
-        logger.info(f"Updated project '{project}' with host '{updated_project.host}'")
-
-    except (ValidationError, ValueError) as e:
-        logger.error(f"Failed to update host for project '{project}': {e}")
-        raise
-
-
-def update_project_id(project: str, project_id: int) -> None:
-    """
-    Update the project_id for a specific project.
-    Args:
-        project: dbt project name that is used to select the host and project_id
-        project_id: dbt project id
+        host: Active host (ex. https://cloud.getdbt.com) - optional
+        project_id: dbt project id - optional
           - ex. https://cloud.getdbt.com/settings/accounts/<account_id>/pages/projects/<project_id>
     """
+    if not host and not project_id:
+        raise ValueError("At least one of host or project_id must be provided")
+
     try:
         config = get_config()
         if not config:
@@ -169,25 +141,56 @@ def update_project_id(project: str, project_id: int) -> None:
         if project not in config.profiles:
             raise ValueError(f"Project '{project}' not found in configuration.")
 
-        validate_unique_project_id(config, project_id, exclude_project=project)
-
         existing_project = config.profiles[project]
 
+        new_host = host if host is not None else existing_project.host
+        new_project_id = project_id if project_id is not None else existing_project.project_id
+
+        if project_id is not None:
+            validate_unique_project_id(config, project_id, exclude_project=project)
+
         updated_project = create_validated_project_config(
-            host=existing_project.host, project_id=project_id
+            host=new_host, project_id=new_project_id
         )
 
         config.profiles[project] = updated_project
         validate_full_config_after_modification(config)
 
         save_config(config)
-        logger.info(
-            f"Updated project '{project}' with project_id {updated_project.project_id}"
-        )
+
+        updates = []
+        if host is not None:
+            updates.append(f"host '{updated_project.host}'")
+        if project_id is not None:
+            updates.append(f"project_id {updated_project.project_id}")
+
+        logger.info(f"Updated project '{project}' with {' and '.join(updates)}")
 
     except (ValidationError, ValueError) as e:
-        logger.error(f"Failed to update project_id for project '{project}': {e}")
+        logger.error(f"Failed to update project '{project}': {e}")
         raise
+
+
+def display_project_config(project: str) -> None:
+    """
+    Display the current configuration for a specific project.
+    Args:
+        project: dbt project name that is used to select the host and project_id
+    """
+    config = get_config()
+    if not config:
+        logger.error("Configuration file not found or invalid.")
+        return
+
+    if project not in config.profiles:
+        logger.error(f"Project '{project}' not found in configuration.")
+        return
+
+    project_config = config.profiles[project]
+    print(f"\nCurrent configuration for '{project}':")
+    print(f"  Host:       {project_config.host}")
+    print(f"  Project ID: {project_config.project_id}")
+    print()
 
 
 def delete_project_config(project: str) -> None:
