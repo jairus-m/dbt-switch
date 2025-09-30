@@ -1,5 +1,7 @@
 # dbt-switch
 
+[![Ask DeepWiki](https://deepwiki.com/badge.svg)](https://deepwiki.com/jairus-m/dbt-switch)
+
 A simple CLI tool to manage and switch between dbt Cloud projects and hosts. Solves the pain point of manually updating `active-host` and `active-project` in your `dbt_cloud.yml` when working with multiple dbt Cloud accounts. 
 
 The crux of the issue is documented in this dbt forum post: [dbt Cloud CLI - Connect to Mulitple Hosts](https://discourse.getdbt.com/t/dbt-cloud-cli-connect-to-multiple-hosts/14075).
