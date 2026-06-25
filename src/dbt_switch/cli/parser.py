@@ -6,6 +6,7 @@ import click
 
 from dbt_switch.utils import logger, get_current_version
 from dbt_switch.config.file_handler import init_config
+from dbt_switch.agent import SKILL_PROMPT_INIT, SKILL_PROMPT_USAGE
 from dbt_switch.config.input_handler import (
     add_user_config,
     delete_user_config,
@@ -32,6 +33,24 @@ def cli(ctx, project):
 
     if ctx.invoked_subcommand is None:
         click.echo(ctx.get_help())
+
+
+@cli.command()
+@click.option("--init", "mode", flag_value="init", help="Prompt for first-time setup: merging dbt_cloud.yml files and configuring dbt-switch")
+@click.option("--usage", "mode", flag_value="usage", help="Prompt for day-to-day usage: switching, adding, updating, and deleting projects")
+def skill(mode):
+    """Print an agent skill prompt for AI-assisted setup (--init) or usage (--usage).
+
+    Run without flags to print both prompts.
+    """
+    if mode == "init":
+        click.echo(SKILL_PROMPT_INIT)
+    elif mode == "usage":
+        click.echo(SKILL_PROMPT_USAGE)
+    else:
+        click.echo(SKILL_PROMPT_INIT)
+        click.echo("\n---\n")
+        click.echo(SKILL_PROMPT_USAGE)
 
 
 @cli.command()
