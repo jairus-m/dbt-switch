@@ -17,7 +17,10 @@ from dbt_switch.config.input_handler import (
 )
 
 
-@click.group(invoke_without_command=True)
+CONTEXT_SETTINGS = {"help_option_names": ["-h", "--help"]}
+
+
+@click.group(invoke_without_command=True, context_settings=CONTEXT_SETTINGS)
 @click.option("-p", "--project", help="Switch to the specified project")
 @click.version_option(version=get_current_version(), prog_name="dbt-switch")
 @click.pass_context
@@ -35,7 +38,7 @@ def cli(ctx, project):
         click.echo(ctx.get_help())
 
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.option("--init", "mode", flag_value="init", help="Prompt for first-time setup: merging dbt_cloud.yml files and configuring dbt-switch")
 @click.option("--usage", "mode", flag_value="usage", help="Prompt for day-to-day usage: switching, adding, updating, and deleting projects")
 def skill(mode):
@@ -53,13 +56,13 @@ def skill(mode):
         click.echo(SKILL_PROMPT_USAGE)
 
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 def init():
     """Initialize ~/.dbt/dbt_switch.yml"""
     init_config()
 
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument("project_name", required=False)
 @click.option("--host", help="Project host URL (e.g., https://cloud.getdbt.com)")
 @click.option("--project-id", type=int, help="dbt project ID")
@@ -68,19 +71,19 @@ def add(project_name, host, project_id):
     add_user_config("add", project_name, host, project_id)
 
 
-@cli.command("list")
+@cli.command("list", context_settings=CONTEXT_SETTINGS)
 def list_projects_cmd():
     """List all available projects"""
     list_projects()
 
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 def delete():
     """Delete a project entry"""
     delete_user_config("delete")
 
 
-@cli.command()
+@cli.command(context_settings=CONTEXT_SETTINGS)
 @click.argument("project_name", required=False)
 @click.option("--host", help="Update project host URL (e.g., https://cloud.getdbt.com)")
 @click.option("--project-id", type=int, help="Update dbt project ID")
