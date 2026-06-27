@@ -6,7 +6,7 @@ import click
 
 from dbt_switch.utils import logger, get_current_version
 from dbt_switch.config.file_handler import init_config
-from dbt_switch.agent import SKILL_PROMPT_INIT, SKILL_PROMPT_USAGE
+from dbt_switch.prompts.skills import SKILL_PROMPT_INIT, SKILL_PROMPT_USAGE
 from dbt_switch.config.input_handler import (
     add_user_config,
     delete_user_config,
