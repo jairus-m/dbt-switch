@@ -7,6 +7,7 @@ from unittest.mock import patch
 from click.testing import CliRunner
 
 from dbt_switch.cli.parser import cli
+from dbt_switch.prompts.skills import SKILL_PROMPT_INIT, SKILL_PROMPT_USAGE
 
 
 class TestCliParser:
@@ -151,3 +152,39 @@ class TestCliParser:
         result = runner.invoke(cli, ["--version"])
         assert result.exit_code == 0
         assert "dbt-switch" in result.output
+
+
+class TestSkillCommand:
+    """Test CLI skill command output."""
+
+    def test_skill_init_flag(self):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["skill", "--init"])
+        assert result.exit_code == 0
+        assert result.output.strip() == SKILL_PROMPT_INIT
+
+    def test_skill_usage_flag(self):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["skill", "--usage"])
+        assert result.exit_code == 0
+        assert result.output.strip() == SKILL_PROMPT_USAGE
+
+    def test_skill_no_flags_outputs_both_prompts(self):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["skill"])
+        assert result.exit_code == 0
+        assert SKILL_PROMPT_INIT in result.output
+        assert SKILL_PROMPT_USAGE in result.output
+        assert "---" in result.output
+
+    def test_skill_no_flags_init_before_usage(self):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["skill"])
+        assert result.output.index(SKILL_PROMPT_INIT[:40]) < result.output.index(SKILL_PROMPT_USAGE[:40])
+
+    def test_skill_help(self):
+        runner = CliRunner()
+        result = runner.invoke(cli, ["skill", "--help"])
+        assert result.exit_code == 0
+        assert "--init" in result.output
+        assert "--usage" in result.output

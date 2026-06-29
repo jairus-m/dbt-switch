@@ -6,6 +6,8 @@ A simple CLI tool to manage and switch between dbt Cloud projects and hosts. Sol
 
 The crux of the issue is documented in this dbt forum post: [dbt Cloud CLI - Connect to Mulitple Hosts](https://discourse.getdbt.com/t/dbt-cloud-cli-connect-to-multiple-hosts/14075).
 
+> **Two ways to use dbt-switch:** run the CLI commands yourself, or let an AI agent handle setup and day-to-day usage for you. Both paths are documented below.
+
 
 
 
@@ -46,6 +48,23 @@ dbt-switch list
 # Switch to a project
 dbt-switch -p my-project
 ```
+
+## AI-Assisted Setup & Usage
+
+dbt-switch ships with agent skill prompts that you can pass directly to an AI (e.g. Claude Code) to automate setup or day-to-day project management.
+
+```bash
+# Print the setup prompt (merging dbt_cloud.yml files + configuring dbt-switch)
+dbt-switch skill --init
+
+# Print the usage prompt (switching, adding, updating, deleting projects)
+dbt-switch skill --usage
+
+# Print both
+dbt-switch skill
+```
+
+**How to use:** run one of the commands above from within an AI coding session (e.g. Claude Code) or copy the output and paste it into your AI assistant as a system/user prompt. The agent will guide you through the workflow — you just download the files (for `--init`) or describe what you want to do (for `--usage`).
 
 ## Key Features
 
