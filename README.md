@@ -64,7 +64,7 @@ dbt-switch skill --usage
 dbt-switch skill
 ```
 
-**How to use:** run one of the commands above, copy the output, and paste it into your AI assistant as a system/user prompt. The agent will guide you through the workflow — you just download the files (for `--init`) or describe what you want to do (for `--usage`).
+**How to use:** run one of the commands above from within an AI coding session (e.g. Claude Code) or copy the output and paste it into your AI assistant as a system/user prompt. The agent will guide you through the workflow — you just download the files (for `--init`) or describe what you want to do (for `--usage`).
 
 ## Key Features
 
